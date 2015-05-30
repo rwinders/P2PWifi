@@ -25,7 +25,7 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends Activity {
+public class P2pMain extends Activity {
 
     ListView listView;
 
@@ -35,6 +35,7 @@ public class MainActivity extends Activity {
     WiFiDirectBroadcastReceiver mReceiver;
     boolean wifiP2pEnabled;
     private List peers = new ArrayList();
+    private List peerNames = new ArrayList();
     private ArrayAdapter<String> adapter;
 
 
@@ -58,9 +59,10 @@ public class MainActivity extends Activity {
         mReceiver = new WiFiDirectBroadcastReceiver(mManager, mChannel, this);
 
         peers = mReceiver.get_peers();
+        peerNames = mReceiver.get_peerNames();
 
         adapter = new ArrayAdapter<String>(this,
-                android.R.layout.simple_list_item_1, android.R.id.text1, peers);
+                android.R.layout.simple_list_item_1, android.R.id.text1, peerNames);
 
         listView.setAdapter(adapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -168,5 +170,10 @@ public class MainActivity extends Activity {
                 Log.d("connect", "Failed to connect to device.");
             }
         });
+    }
+
+    public void start_file_chooser() {
+        /*Intent intent = new Intent(this.getActivity(), FileChooser.class);
+            startActivity(intent);*/
     }
 }

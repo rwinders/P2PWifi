@@ -29,7 +29,7 @@ public class WiFiDirectBroadcastReceiver extends BroadcastReceiver {
 
     private WifiP2pManager mManager;
     private WifiP2pManager.Channel mChannel;
-    private MainActivity mActivity;
+    private P2pMain mActivity;
 
     private List peers = new ArrayList();
     private List peerNames = new ArrayList();
@@ -54,14 +54,25 @@ public class WiFiDirectBroadcastReceiver extends BroadcastReceiver {
         @Override
         public void onConnectionInfoAvailable(final WifiP2pInfo info) {
             String hostAddress = info.groupOwnerAddress.getHostAddress();
-            Log.d("connected", String.format("connected to device with host: %s", hostAddress));
-            /*Intent intent = new Intent(this.getActivity(), FileChooser.class);
-            intent.putExtra("host", hostAddress);
-            startActivity(intent);*/
+            if(info.isGroupOwner) {
+                Log.d("connected", "I am group owner.");
+            }
+            //Log.d("connected", String.format("connected to device with host: %s", hostAddress));
+            // After the group negotiation, we can determine the group owner.
+            if (info.groupFormed && info.isGroupOwner) {
+                // Do whatever tasks are specific to the group owner.
+                // One common case is creating a server thread and accepting
+                // incoming connections.
+                mActivity.start_file_chooser();
+            } else if (info.groupFormed) {
+                // The other device acts as the client. In this case,
+                // you'll want to create a client thread that connects to the group
+                // owner.
+            }
         }
     };
 
-    public WiFiDirectBroadcastReceiver(WifiP2pManager manager, WifiP2pManager.Channel channel, MainActivity activity) {
+    public WiFiDirectBroadcastReceiver(WifiP2pManager manager, WifiP2pManager.Channel channel, P2pMain activity) {
         super();
         this.mManager = manager;
         this.mChannel = channel;
@@ -108,5 +119,9 @@ public class WiFiDirectBroadcastReceiver extends BroadcastReceiver {
 
     public List get_peers(){
         return peers;
+    }
+
+    public List get_peerNames() {
+        return peerNames;
     }
 }
